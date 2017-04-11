@@ -1,5 +1,15 @@
+'use strict'
+
+const Step = require('./Step')
+
 function Path(length, source) {
     this.route = []
+}
+Path.prototype.getSize = function() {
+    return this.route.length
+}
+Path.prototype.forEachStep = function(callback) {
+    return this.route.forEach(callback)
 }
 Path.prototype.setLength = function(length) {
     this.route = []
@@ -13,6 +23,9 @@ Path.prototype.addStep = function(node, range) {
 Path.prototype.setStep = function(i, node, range) {
     this.route[i].node = node
     this.route[i].range = range
+}
+Path.prototype.getStep = function(i) {
+    return this.route[i]
 }
 Path.prototype.getStepNode = function(i) {
     return this.route[i].node
@@ -37,16 +50,4 @@ Path.prototype.pack = function() {
         route: this.route.map(step => step.pack())
     }
 }
-
-function Step(node, range) {
-    this.node = node
-    this.range = range
-}
-Step.prototype.pack = function() {
-    return {
-        node: this.node,
-        range: this.range
-    }
-}
-
 module.exports = Path

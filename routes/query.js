@@ -19,7 +19,7 @@ router.get('/route', function (req, res, next) {
     if (exist.arrival && exist.departure) {
         let nd1 = metroManager.getNodeByLabel(departure)
         let nd2 = metroManager.getNodeByLabel(arrival)
-        let path = metroManager.buildPath(nd1, nd2)
+        let path = metroManager.buildPath(nd1, nd2).pack()
         res.render('path', path)
     } else 
         res.status(500).json(exist)
@@ -39,7 +39,7 @@ router.get('/route-pure', function (req, res, next) {
     if (exist.arrival && exist.departure) {
         let nd1 = metroManager.getNodeByLabel(departure)
         let nd2 = metroManager.getNodeByLabel(arrival)
-        let path = metroManager.buildPath(nd1, nd2)
+        let path = metroManager.buildPath(nd1, nd2).pack()
         res.send(path)
     } else 
         res.status(500).json(exist)

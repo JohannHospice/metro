@@ -1,7 +1,7 @@
 $(document).ready(function () {
     const tools = {
         ajaxFactory: {
-            route: function (arrival, departure) {
+            route: function (departure, arrival) {
                 return $.ajax('/query/route', {
                     type: 'GET',
                     data: {
