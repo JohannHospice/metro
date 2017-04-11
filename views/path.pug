@@ -1,0 +1,20 @@
+each transit in route
+    <hr class="uk-grid-divider">
+
+    div(class="uk-grid")
+
+        div(class="uk-width-3-10")
+            img(src="/images/icones/ico_l" + transit.line + ".png" alt="metro line " + transit.line)
+        
+        div(class="uk-width-7-10")
+
+    each station in transit.stations
+        
+        div(class="uk-grid")
+            
+            div(class="uk-width-3-10")
+                span=station.range
+            
+            div(class="uk-width-7-10")
+                span=station.label
+            
