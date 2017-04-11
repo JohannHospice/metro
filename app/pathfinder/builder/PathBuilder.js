@@ -1,16 +1,18 @@
 'use strict'
 
-const Path = require('./Path')
+const Path = require('../object/default/Path')
 
 function PathBuilder(length, source) {
     this.finder = new Path()
     this.source = -1
     this.length = -1
-    this.setLength(length)
-    this.setSource(source)
+    if(length) {
+        this.setLength(length)
+        if(source) this.setSource(source)
+    }
 }
 PathBuilder.prototype.setSource = function (source) {
-    if(typeof source !== "number" && source < 0)
+    if(typeof source !== "number" || source < 0)
         throw "source unvalid"
     if(this.length < 0)
         throw "length undefined"
@@ -19,12 +21,12 @@ PathBuilder.prototype.setSource = function (source) {
     this.finder.setStepRange(source, 0)
     return this
 }
-PathBuilder.prototype.setlength = function (length) {
-    if(typeof length !== "number" && source < 0)
+PathBuilder.prototype.setLength = function (length) {
+    if(typeof length !== "number" || length < 0)
         throw "length unvalid"
 
     this.length = length
-    this.finder.setlength(length)
+    this.finder.setLength(length)
     return this
 }
 PathBuilder.prototype.djikstra = function (graph) {

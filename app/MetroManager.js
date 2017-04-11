@@ -2,10 +2,12 @@
 
 const fs = require('fs')
 const MetroGraph = require('./graph/MetroGraph'),
-	PathBuilder = require('./pathfinder/PathBuilder'),
+	PathBuilder = require('./pathfinder/builder/PathBuilder'),
+	MetroPath = require('./pathfinder/object/metro/MetroPath'),
 	tools = require('./tools')
 
 const REG_FILENAME_STATION = /^metro_ligne(.*?)\.stations$/
+const CACHE_LIFETIME = 10000
 
 /**
  * Constructor
@@ -48,15 +50,7 @@ function MetroManager(root) {
 MetroManager.prototype.buildPath = function (source, target) {
 	if (!this.hasCache(source))
 		this.prepareCache(source)
-	let path = this.getCache(source).build(target)
-/*** seeeeeeeeeeee */
-    for (let i = 0; i < path.length; i++) {
-		for (let j = 0; j < path.length; j++) {
-			let station = path.route[i].stations[j]
-    		station.label = this.metroGraph.getLabel(station.node)
-		}
-    }
-
+	let path = new MetroPath(this.metroGraph, this.getCache(source).build(target))
     return path
 }
 MetroManager.prototype.suggestions = function (labelReq, tolerance = 0.5, max = 100) {
@@ -75,10 +69,13 @@ MetroManager.prototype.suggestions = function (labelReq, tolerance = 0.5, max = 
  */
 MetroManager.prototype.prepareCache = function (source) {
 	let builder = new PathBuilder()
-		.setSource(source)
 		.setLength(this.metroGraph.getSize())
+		.setSource(source)
 		.djikstra(this.metroGraph)
+		
 	this.cache.set(source, builder)
+	
+	setTimeout(() => this.deleteCache(source), CACHE_LIFETIME)
 }
 MetroManager.prototype.deleteCache = function (source) {
 	this.cache.delete(source)

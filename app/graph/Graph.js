@@ -9,7 +9,7 @@ Graph.prototype.getWeight = function (source, target) {
 	return this.weights.get(mergeNodes(source, target))
 }
 Graph.prototype.getSize = function () {
-	return this.nodes.size()
+	return this.nodes.size
 }
 Graph.prototype.getEdges = function (source) {
 	return this.edges.get(source)
