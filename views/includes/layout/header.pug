@@ -1,0 +1,10 @@
+block before-header
+block header
+    header
+        nav(class="uk-navbar")
+            div(class="uk-container uk-container-center")
+                ul(class="uk-navbar-nav")
+                    each link, name in routes
+                        li(class={'uk-active': currentUrl == link})
+                            a(href=link)= name
+block after-header

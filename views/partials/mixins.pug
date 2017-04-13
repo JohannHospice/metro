@@ -1,0 +1,55 @@
+mixin station_detail(station)
+    div(class="uk-grid")
+        div(class="uk-width-3-10")
+            span=station.range
+        div(class="uk-width-7-10")
+            span=station.label
+            
+mixin transit_detail_info(transit)
+    div(class="uk-grid")
+        div(class="uk-width-3-10")
+        div(class="uk-width-7-10")
+            div
+                img(src="/images/icones/ico_l" + transit.line + ".png" alt="metro line " + transit.line)
+                span(class="uk-margin-left")=transit.direction
+            div
+                i(class="uk-icon-small uk-icon-angle-down")
+                - var stops = ""
+                if transit.length > 1 
+                    - stops = transit.length - 2
+                else 
+                    - stops = "no"
+                span(class="uk-margin-left")=transit.range + " min ("+ stops +" stops)"
+
+mixin transit_detail(transit)
+    hr(class="uk-grid-divider")
+    +station_detail(transit.source)
+    div(class="uk-grid")
+        div(class="uk-width-1-1")
+            div(class="uk-accordion" data-uk-accordion="{showfirst: false}")
+                div(class="uk-accordion-title")
+                    +transit_detail_info(transit)
+                div(class="uk-accordion-content")
+                    - for (var i = 1; i < transit.length - 1; i++)
+                        +station_detail(transit.stations[i])
+    +station_detail(transit.target)
+
+mixin route_resume(source, target)
+    div(class="uk-text-large")
+        span(class="uk-text-muted")="from "
+        span=source
+        span(class="uk-text-muted")=" to "
+        span=target
+
+mixin range_resume(range)
+    div(class="uk-text-large")
+        span=leave + " - " + arrive + " "
+        span(class="uk-text-muted")="(" + range + " min)"
+
+mixin transit_resume(route)
+    div(class="uk-vertical-align-middle uk-text-muted")
+        img(src="/images/icones/ico_l" + route[0].line + ".png" alt="metro line " + route[0].line)
+        - for (var i = 1; i < route.length; i++)
+            i(class="uk-icon-small uk-icon-angle-right uk-margin-right uk-margin-left")
+            img(src="/images/icones/ico_l" + route[i].line + ".png" 
+                alt="metro " + route[i].line)

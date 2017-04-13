@@ -4,25 +4,26 @@ const Graph = require('./Graph.js')
 
 function MetroGraph() {
 	Graph.call(this)
-	Map.prototype.hasValue = function(value) {
+	Map.prototype.hasValue = function (value) {
 		let iter = this.values()
 		let exist = false
-		for(let next = iter.next(); !(next.done || exist); next = iter.next())
+		for (let next = iter.next(); !(next.done || exist); next = iter.next())
 			exist = next.value == value
 		return exist
 	}
-	Map.prototype.getKey = function(value) {
+	Map.prototype.getKey = function (value) {
 		let iter = this.entries()
 		let key = null
-		for(let next = iter.next(); (!next.done && key === null); next = iter.next())
-			if(next.value[1] == value)
+		for (let next = iter.next();
+			(!next.done && key === null); next = iter.next())
+			if (next.value[1] == value)
 				key = next.value[0]
 		return key
 	}
-	Map.prototype.while = function(condition, callback){
+	Map.prototype.while = function (condition, callback) {
 		let iter = this.entries(),
 			next = iter.next()
-		while(!next.done && condition(next.value)){
+		while (!next.done && condition(next.value)) {
 			callback(next.value[0], next.value[1])
 			next = iter.next()
 		}
@@ -33,61 +34,86 @@ function MetroGraph() {
 MetroGraph.prototype = Object.create(Graph.prototype)
 MetroGraph.prototype.constructor = MetroGraph
 
-MetroGraph.prototype.hasLabel = function(label) {
+MetroGraph.prototype.hasLabel = function (label) {
 	return this.labels.hasValue(label)
 }
-MetroGraph.prototype.addNode = function(node, label) {
-    Graph.prototype.addNode.call(this, node)
-    this.labels.set(node, label)
+MetroGraph.prototype.addNode = function (node, label) {
+	Graph.prototype.addNode.call(this, node)
+	this.labels.set(node, label)
 }
-MetroGraph.prototype.addLine = function(line) {
-    this.lines.set(line, [])
+MetroGraph.prototype.addLine = function (line) {
+	if(typeof line !== 'string' && typeof line !== 'number')
+		throw 'err type form addLine MetroGraph'
+	this.lines.set(line, [])
 }
-MetroGraph.prototype.addStation = function(line, station) {
-	if(!this.lines.has(line))
+MetroGraph.prototype.addStation = function (line, station) {
+	if(typeof station !== "string" && typeof station !== "number")
+		throw 'err type form add station MetroGraph'
+	if (typeof station === "string")
+		station = parseInt(station, 10)
+	if (!this.lines.has(line))
 		this.addLine(line)
-    this.lines.get(line).push(station)
+	this.lines.get(line).push(station)
 }
-MetroGraph.prototype.getLine = function(line) {
-    return this.lines.get(line)
+
+MetroGraph.prototype.getStations = function (line) {
+	return this.getLine(line)
 }
-MetroGraph.prototype.getTransitSize = function(line) {
-    return this.lines.length
+MetroGraph.prototype.getLine = function (line) {
+	return this.lines.get(line)
 }
-MetroGraph.prototype.getCorrespondances = function(station) {
-    let correspondances = []
-    this.lines.forEach((stations, line) => {
-    	if(stations.some(st => st == station))
-    		correspondances.push(line)
-    })
-    return correspondances
+MetroGraph.prototype.getTransitSize = function (line) {
+	return this.lines.length
 }
-MetroGraph.prototype.getLineByStations = function(st1, st2) {
+MetroGraph.prototype.getCorrespondances = function (station) {
+	let correspondances = []
+	this.lines.forEach((stations, line) => {
+		if (stations.some(st => st == station))
+			correspondances.push(line)
+	})
+	return correspondances
+}
+MetroGraph.prototype.getLineByStations = function (st1, st2) {
 	let lineFounded = null
 	//change to while
-    this.lines.forEach((stations, line) => {
-    	if(stations.some(st0 => st0 == st1) && stations.some(st0 => st0 == st2))
+	this.lines.forEach((stations, line) => {
+		if (stations.some(st0 => st0 == st1) && stations.some(st0 => st0 == st2))
 			lineFounded = line
 	})
-    return lineFounded
+	return lineFounded
 }
-MetroGraph.prototype.getLabel = function(node) {
-    return this.labels.get(node)
+MetroGraph.prototype.getDirection = function (line, from, to) {
+	let foundFrom = false
+	let foundto = false
+	let stations = this.getLine(line)
+	for (let i = 0; i < stations.length; i++) {
+		if (stations[i] == from) {
+			foundFrom = true
+			if (foundto) return stations[0]
+		} else if (stations[i] == to) {
+			foundto = true
+			if (foundFrom) return stations[stations.length - 1]
+		}
+	}
+	return -1
+}
+MetroGraph.prototype.getLabel = function (node) {
+	return this.labels.get(node)
 }
 MetroGraph.prototype.getNodeByLabel = function (label) {
 	return this.labels.getKey(label)
 }
-MetroGraph.prototype.forEachLabel = function(callback) {
-    return this.labels.forEach(callback)
+MetroGraph.prototype.forEachLabel = function (callback) {
+	return this.labels.forEach(callback)
 }
-MetroGraph.prototype.whileLabel = function(condition, callback) {
+MetroGraph.prototype.whileLabel = function (condition, callback) {
 	this.labels.while(condition, callback)
 }
-MetroGraph.prototype.toString = function() {
+MetroGraph.prototype.toString = function () {
 	let string = '{\n'
 	this.forEachNodes(source => {
 		string += `\t(${source}, ${this.getLabel(source)}): {`
-		this.forEachEdges(source, target => 
+		this.forEachEdges(source, target =>
 			string += `${target}: ${this.getWeight(source, target)}, `)
 		string += '},\n'
 	})

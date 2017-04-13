@@ -47,13 +47,24 @@ function MetroManager(root) {
 /**
  * Request managing
  */
-MetroManager.prototype.buildPath = function (source, target) {
+/**
+ * 
+ * @param {number} source 
+ * @param {number} target 
+ * @param {boolean} isLeaving 
+ * @param {Array} time 
+ */
+MetroManager.prototype.buildPath = function (source, target, isLeaving, time) {
 	if (!this.hasCache(source))
 		this.prepareCache(source)
-	let path = new MetroPath(this.metroGraph, this.getCache(source).build(target))
-    return path
+    return new MetroPath(this.metroGraph, this.getCache(source).build(target), isLeaving, time)
 }
-MetroManager.prototype.suggestions = function (labelReq, tolerance = 0.5, max = 100) {
+/**
+ * 
+ * @param {String} labelReq 
+ * @param {number} max 
+ */ 
+MetroManager.prototype.suggestions = function (labelReq, max = 100) {
 	let array = []
 	this.metroGraph.forEachLabel((label, node) => {
 		let distance = tools.distance(labelReq, label)
