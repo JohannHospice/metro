@@ -1,0 +1,61 @@
+ul(class="uk-grid uk-grid-match uk-grid-width-1-1 uk-grid-width-medium-1-3" data-uk-grid data-uk-grid-margin)
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-edit")
+                |  Saisie d’une station de départ, d’une station d’arrivée
+            p
+                | Votre interface doit permettre de
+                | saisir une station de départ ainsi qu’une station d’arrivée, au format texte.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-calculator")
+                |  Calcul d’un parcours 
+            p
+                | Vous devez pouvoir proposer un parcours entre n’importe quels points
+                | de départ et d’arrivée, même non-optimal 3
+                | , avec moins de 4 changements. Le graphe étant
+                | fortement connexe, aucun parcours n’est impossible.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-map")
+                |  Affichage du parcours (correspondances incluses)
+            p
+                | Vous devez afficher votre parcours segment
+                | par segment, en indiquant à l’utilisateur quand il doit changer de ligne.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-bug")
+                |  Gérer les erreurs
+            p
+                | Votre programme doit afficher une erreur et rester fonctionnel même si
+                | l’utilisateur effectue des saisies incorrectes.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-search")
+                |  Suggestion des noms de station
+            p
+                | Utilisez de l’auto-complétion pour les champs de texte afin
+                | de suggérer les noms des stations de départ et d’arrivée.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title 
+                i(class="uk-icon-eraser")
+                |  Proposer des corrections de nom après soumission
+            p
+                | Petit corollaire du point précédent,
+                | si le nom d’une station soumis par l’utilisateur est introuvable en tant que tel, essayez de
+                | proposer des corrections du nom de station.
+    li
+        div(class="uk-panel uk-panel-box uk-panel-box-primary")
+            h5.uk-panel-title
+                i(class="uk-icon-map-signs")
+                |  Direction de la ligne de métro à prendre
+            p
+                | En ajoutant des informations additionnelles au
+                | graphe, indiquez lors d’un changement la direction de la ligne à prendre (exemple : Prendre
+                | la ligne 14 direction Saint-Lazare).

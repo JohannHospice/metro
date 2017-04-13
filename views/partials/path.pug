@@ -1,0 +1,26 @@
+include mixins
+div(id="resume" data-uk-sticky)
+    div(class="uk-panel uk-panel-box")
+        div(class="uk-grid uk-grid-divider uk-text-center" data-uk-grid-match data-uk-grid-margin )
+            div(class="uk-width-medium-1-3 uk-margin-top uk-margin-bottom")
+                +route_resume(source, target)
+            div(class="uk-width-medium-1-3 uk-margin-top uk-margin-bottom")
+                +transit_resume(route)
+            div(class="uk-width-medium-1-3 uk-margin-top uk-margin-bottom")
+                +range_resume(range)
+    
+div(class="uk-margin-large-top" id="detail")
+    each transit in route
+        +transit_detail(transit)
+
+script.
+    $('.uk-accordion-title').click(function () {
+        var down = $(this).find('i.uk-icon-angle-down')
+        if (down.length != 0)
+            down.removeClass('uk-icon-angle-down').addClass('uk-icon-angle-up')
+        else {
+            var up = $(this).find('i.uk-icon-angle-up')
+            if (up.length != 0)
+                up.removeClass('uk-icon-angle-up').addClass('uk-icon-angle-down')
+        }
+    })

@@ -6,50 +6,74 @@ var router = express.Router();
 let metroManager = new MetroManager('./assets/metro/')
 
 router.get('/route', function (req, res, next) {
-    if(typeof req.query.departure !== 'string' || typeof req.query.arrival !== 'string')
-        return res.status(500).send('not valid')
+    let {
+        departure,
+        arrival,
+        time,
+        sens
+    } = req.query
 
-    let departure = req.query.departure.trim().toLowerCase()
-    let arrival = req.query.arrival.trim().toLowerCase()
-    let exist = {
+    if (typeof departure !== 'string' ||
+        typeof arrival !== 'string' ||
+        typeof sens !== 'string' ||
+        typeof time !== 'object')
+        return res.status(500).send('not valid')
+        
+    departure = departure.trim().toLowerCase()
+    arrival = arrival.trim().toLowerCase()
+
+    let isLeaving = sens == 'now' || sens == 'leave'
+    let hasLabel = {
         departure: metroManager.hasLabel(departure),
         arrival: metroManager.hasLabel(arrival)
     }
-    
-    if (exist.arrival && exist.departure) {
+
+    if (hasLabel.arrival && hasLabel.departure) {
         let nd1 = metroManager.getNodeByLabel(departure)
         let nd2 = metroManager.getNodeByLabel(arrival)
-        let path = metroManager.buildPath(nd1, nd2).pack()
-        res.render('path', path)
-    } else 
-        res.status(500).json(exist)
+        let path = metroManager.buildPath(nd1, nd2, isLeaving, time).pack()
+        res.render('partials/path', path)
+    } else
+        res.status(500).json(hasLabel)
 });
 
 router.get('/route-pure', function (req, res, next) {
-    if(typeof req.query.departure !== 'string' || typeof req.query.arrival !== 'string')
-        return res.status(500).send('not valid')
+    let {
+        departure,
+        arrival,
+        time,
+        sens
+    } = req.query
 
-    let departure = req.query.departure.trim().toLowerCase()
-    let arrival = req.query.arrival.trim().toLowerCase()
-    let exist = {
+    if (typeof departure !== 'string' ||
+        typeof arrival !== 'string' ||
+        typeof sens !== 'string' ||
+        typeof time !== 'object')
+        return res.status(500).send('not valid')
+        
+    departure = departure.trim().toLowerCase()
+    arrival = arrival.trim().toLowerCase()
+
+    let isLeaving = sens == 'now' || sens == 'leave'
+    let hasLabel = {
         departure: metroManager.hasLabel(departure),
         arrival: metroManager.hasLabel(arrival)
     }
-    
-    if (exist.arrival && exist.departure) {
+
+    if (hasLabel.arrival && hasLabel.departure) {
         let nd1 = metroManager.getNodeByLabel(departure)
         let nd2 = metroManager.getNodeByLabel(arrival)
-        let path = metroManager.buildPath(nd1, nd2).pack()
+        let path = metroManager.buildPath(nd1, nd2, isLeaving, time).pack()
         res.send(path)
-    } else 
-        res.status(500).json(exist)
+    } else
+        res.status(500).json(hasLabel)
 });
 
 router.get('/search', function (req, res, next) {
-    if(typeof req.query.location !== 'string')
+    if (typeof req.query.location !== 'string')
         return res.status(500).send('not valid')
     let location = req.query.location.trim().toLowerCase()
-    let suggestions = metroManager.suggestions(location, 0.89, 10)
+    let suggestions = metroManager.suggestions(location, 10)
     res.send(suggestions)
 });
 

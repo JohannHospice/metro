@@ -1,32 +1,48 @@
 extends layout
 
-block head
-    link(href='/css/components/notify.min.css' rel='stylesheet')
-    link(href='/css/components/autocomplete.min.css' rel='stylesheet')
+block after-head-content
+    link(href="/css/components/notify.min.css" rel="stylesheet")
+    link(href="/css/components/autocomplete.min.css" rel="stylesheet")
+    link(href="/css/components/accordion.min.css" rel="stylesheet")
+    link(href="/css/components/sticky.min.css" rel="stylesheet")
+    link(href="/css/components/form-select.min.css" rel="stylesheet")
+    script(src="/js/uikit/components/autocomplete.min.js")
+    script(src="/js/uikit/components/notify.min.js")
+    script(src="/js/uikit/components/accordion.min.js")
+    script(src="/js/uikit/components/sticky.min.js")
+    script(src="/js/uikit/components/form-select.min.js")
+    script(src="/js/uikit/components/timepicker.min.js")
 
-block content
-    h1= title
-    div(id='route')
 
-        form(class='uk-form' id='form')
-
-            div(class='uk-grid uk-grid-width-medium-1-2' data-uk-grid-margin)
-
-                div(class='uk-form uk-form-icon uk-autocomplete' id='autocomplete-departure')
-                    i(class='uk-icon-circle-o')
-                    input(class='uk-width-1-1' type='text' name='departure' id='departure' placeholder='Choose a departure')
-
-                div(class='uk-form uk-form-icon uk-autocomplete' id='autocomplete-arrival')
-                    i(class='uk-icon-circle')
-                    input(class='uk-width-1-1' type='text' name='arrival' id='arrival' placeholder="Choose an arrival")
-
-            div(class='uk-grid')
-                div(class='uk-width-1-1')
-                    button(class='uk-button uk-button-primary uk-width-1-1' type='submit') Search
+block main-content
+    h1=title
+    div#route
+        form.uk-form#form
+            div(data-uk-grid-margin)
+                div(class="uk-grid uk-grid-width-medium-1-2" data-uk-grid-margin)
+                    div(class="uk-form uk-form-icon uk-autocomplete" id="autocomplete-departure")
+                        i.uk-icon-circle-o
+                        input(class="uk-width-1-1" type="text" name="departure" id="departure" placeholder="Choose a departure")
+                    div(class="uk-form uk-form-icon uk-autocomplete" id="autocomplete-arrival")
+                        i.uk-icon-circle
+                        input(class="uk-width-1-1" type="text" name="arrival" id="arrival" placeholder="Choose an arrival")
+                div.uk-width-medium-1-2
+                    div(class="uk-grid uk-grid-width-1-2" data-uk-grid-margin)
+                        div.uk-width-1-2
+                            div(class="uk-form-select uk-button uk-width-1-1" data-uk-form-select)
+                                span
+                                select(class="uk-margin" name="sens" id="sens")
+                                    option(value="now") Leave now
+                                    option(value="leave") Leave at
+                                    option(value="arrive") Arrive at
+                        div(class="uk-form uk-form-icon uk-hidden" id="time-container" data-uk-timepicker)
+                            i.uk-icon-clock-o
+                            input(class="uk-width-1-1" type="text" name="time" id="time" placeholder="Choose a time")
+                div.uk-grid
+                    div.uk-width-1-1
+                        button(class="uk-button uk-button-primary uk-width-1-1" type="submit") Search
         
-        div(id='result')
+        div.uk-block#result
 
-block footer
-    script(src='/js/components/autocomplete.min.js')
-    script(src='/js/components/notify.min.js')
-    script(src='/js/client.js')
+block after-footer
+    script(src="/js/client.js")
