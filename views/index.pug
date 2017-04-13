@@ -1,19 +1,19 @@
 extends layout
 
 block before-main
-    div(class="uk-block uk-block-primary uk-contrast")
-        div(class="uk-container uk-container-center")
-            h1= title
+    div.uk-block.uk-block-primary.uk-contrast
+        div.uk-container.uk-container-center
+            h1=title
             p Welcome to #{title}
 
 block main-content
-    div(class="uk-panel")
-        div(class="uk-panel-badge uk-badge") FR
-        article(class="uk-article")
+    div.uk-panel
+        div.uk-panel-badge.uk-badge FR
+        article.uk-article
             div
-                h1(class="uk-article-title")
+                h1.uk-article-title
                     | Devoir Maison : Calcul de trajets en métro (Node.js)
-                p(class="uk-article-lead")
+                p.uk-article-lead
                     | Vous avez tou.te.s sûrement déjà pris le métro dans Paris, probablement même vous le prenez    
                     | tous les jours pour vous rendre à l’université !
                     br
@@ -21,18 +21,18 @@ block main-content
                     | métro de la RATP dans l’agglomération parisienne. Votre application doit permettre de proposer    
                     | un parcours optimal entre deux stations du métro de Paris.
             
-            hr(class="uk-article-divider")
+            hr.uk-article-divider
             h2 Instructions
             include includes/content/instructions
             
-            hr(class="uk-article-divider")
+            hr.uk-article-divider
             h2 Frameworks utilisés
             include includes/content/frameworks
             
-            hr(class="uk-article-divider")
+            hr.uk-article-divider
             h2 Fonctionalités implémentés
             include includes/content/implemented
             
-            hr(class="uk-article-divider")
+            hr.uk-article-divider
             h2 Fonctionalités en cours de développement
             include includes/content/not-implemented

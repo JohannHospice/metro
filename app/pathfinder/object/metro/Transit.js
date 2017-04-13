@@ -1,7 +1,8 @@
 'use strict'
 
 const StationStep = require('./StationStep')
-    
+const Range = require('../Range')
+
 function Transit(line, direction) {
     this.line = line
     this.direction = 'none'
@@ -39,23 +40,20 @@ Transit.prototype.setStationRange = function(i, range) {
 Transit.prototype.setStationLabel = function(i, label) {
     this.stations[i].label = label
 }
-Transit.prototype.setDirection = function(directionNode, directionLabel) {
+Transit.prototype.setDirection = function(directionLabel) {
     this.direction = directionLabel
 }
 
 Transit.prototype.pack = function() {
     let target = this.stations[this.stations.length - 1]
     let source = this.stations[0]
-    let splitSrc = source.range.split(':')
-    let splitTgt = target.range.split(':')
-    let range = (splitTgt[0] - splitSrc[0]) * 60 + splitTgt[1] - splitSrc[1]
     return {
         line: this.line,
         length: this.stations.length,
         direction: this.direction,
         source: source.pack(),
         target: target.pack(),
-        range,
+        range: Range.diff(source.range.split(':'), target.range.split(':')),
         stations: this.stations.map(StationStep => StationStep.pack())
     }
 }

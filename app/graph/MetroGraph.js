@@ -42,12 +42,12 @@ MetroGraph.prototype.addNode = function (node, label) {
 	this.labels.set(node, label)
 }
 MetroGraph.prototype.addLine = function (line) {
-	if(typeof line !== 'string' && typeof line !== 'number')
+	if (typeof line !== 'string' && typeof line !== 'number')
 		throw 'err type form addLine MetroGraph'
 	this.lines.set(line, [])
 }
 MetroGraph.prototype.addStation = function (line, station) {
-	if(typeof station !== "string" && typeof station !== "number")
+	if (typeof station !== "string" && typeof station !== "number")
 		throw 'err type form add station MetroGraph'
 	if (typeof station === "string")
 		station = parseInt(station, 10)
@@ -118,6 +118,66 @@ MetroGraph.prototype.toString = function () {
 		string += '},\n'
 	})
 	return string + '}'
+}
+
+MetroGraph.prototype.json = function () {
+	let nodes = []
+	this.forEachNodes((id) => nodes.push({
+		id,
+		label: this.getLabel(id)
+	}))
+	/*
+		let nodesOriginal = new Map()
+		let nodesfiltered = nodes.filter((nd1, i, self) => {
+			let nd2Id = -1
+			let iFounded = self.findIndex((nd2) => {
+				if (nd2.label === nd1.label) {
+					nd2Id = nd2.id;
+					return true
+				}
+				return false
+			})
+			nodesOriginal.set(nd1.id, nd2Id)
+			return i === iFounded
+		})
+	*/
+	let edges = []
+	this.forEachWeights((source, target, weigth) =>
+		edges.push({
+			id: edges.length,
+			source: source,
+			target: target,
+			weigth,
+		})
+	)
+
+	let lines = []
+	this.lines.forEach((stations, line) => {
+		lines.push({
+			line: line,
+			stations: Array.from(stations)
+		})
+	})
+	return {
+		nodes, //: nodesfiltered,
+		edges,
+		lines
+	}
+}
+
+function diffArray(a1, a2) {
+	let a = []
+	let diff = []
+	for (let i = 0; i < a1.length; i++)
+		a[a1[i]] = true;
+	for (let i = 0; i < a2.length; i++)
+		if (a[a2[i]])
+			delete a[a2[i]]
+	else
+		a[a2[i]] = true
+	for (let k in a)
+		diff.push(k);
+	return diff;
 }
 
 module.exports = MetroGraph

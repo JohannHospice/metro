@@ -28,12 +28,11 @@ function simiArray(arr1, arr2) {
  * @param {MetroGraph} metroGraph 
  * @param {Path} path 
  */
-function MetroPath(metroGraph, path, isLeaving, time) {
+function MetroPath(metroGraph, path, isLeaving, time, penetration = 1) {
     function buildRangeStr(stepRng) {
         let range = new Range(time[0].valueOf(), time[1].valueOf())
         isLeaving ? range.setLeavingTime(stepRng) : range.setArrivalTime(stepRng)
-        let str = range.toString()
-        return str 
+        return range.toString() 
     }
     if (!(path && metroGraph))
         throw "rrrr"
@@ -63,14 +62,16 @@ function MetroPath(metroGraph, path, isLeaving, time) {
             iTransit = this.addTransit(cor2[0]) - 1
             line = cor2[0]
             cor1 = cor2
+            /*
+            timeStr = (function (stepRng) {
+                let timeNonStr = timeStr.split(':')
+                let range = new Range(timeNonStr[0], timeNonStr[1])
+                return (isLeaving ? range.setLeavingTime(stepRng) : range.setArrivalTime(stepRng)).toString() 
+            })(penetration)
+            */
         } else {
-            let directionNd = metroGraph.getDirection(line, fromNd, toNd)
-            if(!directionNd)
-                debugger
-            let directionLabel = metroGraph.getLabel(directionNd)
-            if(!directionLabel)
-                debugger
-            this.setTransitDirection(iTransit, directionNd, directionLabel)
+            let directionLabel = metroGraph.getLabel(metroGraph.getDirection(line, fromNd, toNd))
+            this.setTransitDirection(iTransit, directionLabel)
         }
         this.addStationToTransit(iTransit, toNd, toLabel, timeStr)
         fromNd = toNd
@@ -79,30 +80,30 @@ function MetroPath(metroGraph, path, isLeaving, time) {
 MetroPath.prototype.addTransit = function (line) {
     return this.route.push(new Transit(line))
 }
-MetroPath.prototype.setTransitDirection = function (i, directionNode, directionLabel) {
-    this.route[i].setDirection(directionNode, directionLabel)
+MetroPath.prototype.setTransitDirection = function (i, directionLabel) {
+    this.route[i].setDirection(directionLabel)
 }
 
 MetroPath.prototype.addStationToTransit = function (i, node, label, range) {
     this.route[i].addStation(node, label, range)
 }
+/**
+ * Repare beaucoup de problemes
+ */
 MetroPath.prototype.pack = function () {
     let lastTransit = this.route[this.route.length - 1]
-    let target = lastTransit.getStation(lastTransit.getSize() - 1)
-    let firstTransit = this.route[0]
-    let source = firstTransit.getStation(0)
 
-    let splitSrc = source.range.split(':')
-    let splitTgt = target.range.split(':')
-    this.range = (splitTgt[0] - splitSrc[0]) * 60 + splitTgt[1] - splitSrc[1]
+    let target = lastTransit.getStation(lastTransit.getSize() - 1)
+    let source = this.route[0].getStation(0)
+    let route = this.route.filter(transit => transit.getSize() > 1 )
     return {
-        length: this.route.length,
-        source: this.route[0].getStationLabel(0),
+        length: route.length,
+        source: route[0].getStationLabel(0),
         arrive: target.range,
         leave: source.range,
-        range: this.range,
+        range: Range.diff(source.range.split(':'), target.range.split(':')),
         target: target.label,
-        route: this.route.map(transit => transit.pack())
+        route: route.map(transit => transit.pack())
     }
 }
 module.exports = MetroPath
