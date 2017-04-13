@@ -11,7 +11,7 @@ block after-head-content
     script(src="/js/uikit/components/accordion.min.js")
     script(src="/js/uikit/components/sticky.min.js")
     script(src="/js/uikit/components/form-select.min.js")
-    script(src="/js/uikit/components/timepicker.min.js")
+    script(src="/js/uikit/custom/timepicker.js")
 
 
 block main-content
@@ -19,30 +19,28 @@ block main-content
     div#route
         form.uk-form#form
             div(data-uk-grid-margin)
-                div(class="uk-grid uk-grid-width-medium-1-2" data-uk-grid-margin)
-                    div(class="uk-form uk-form-icon uk-autocomplete" id="autocomplete-departure")
+                div.uk-grid.uk-grid-width-medium-1-2(data-uk-grid-margin)
+                    div.uk-form.uk-form-icon.uk-autocomplete
                         i.uk-icon-circle-o
-                        input(class="uk-width-1-1" type="text" name="departure" id="departure" placeholder="Choose a departure")
-                    div(class="uk-form uk-form-icon uk-autocomplete" id="autocomplete-arrival")
+                        input.uk-width-1-1#departure(type="text" name="departure" placeholder="Choose a departure")
+                    div.uk-form.uk-form-icon.uk-autocomplete
                         i.uk-icon-circle
-                        input(class="uk-width-1-1" type="text" name="arrival" id="arrival" placeholder="Choose an arrival")
+                        input.uk-width-1-1#arrival(type="text" name="arrival" placeholder="Choose an arrival")
                 div.uk-width-medium-1-2
-                    div(class="uk-grid uk-grid-width-1-2" data-uk-grid-margin)
+                    div.uk-grid.uk-grid-width-1-2(data-uk-grid-margin)
                         div.uk-width-1-2
-                            div(class="uk-form-select uk-button uk-width-1-1" data-uk-form-select)
+                            div.uk-form-select.uk-button.uk-width-1-1(data-uk-form-select)
                                 span
-                                select(class="uk-margin" name="sens" id="sens")
+                                select.uk-margin#sens(name="sens")
                                     option(value="now") Leave now
                                     option(value="leave") Leave at
                                     option(value="arrive") Arrive at
-                        div(class="uk-form uk-form-icon uk-hidden" id="time-container" data-uk-timepicker)
+                        div.uk-form.uk-form-icon.uk-hidden#time-container(data-uk-timepicker)
                             i.uk-icon-clock-o
-                            input(class="uk-width-1-1" type="text" name="time" id="time" placeholder="Choose a time")
+                            input.uk-width-1-1#time(type="text" name="time" placeholder="Choose a time")
                 div.uk-grid
                     div.uk-width-1-1
-                        button(class="uk-button uk-button-primary uk-width-1-1" type="submit") Search
-        
+                        button.uk-button.uk-button-primary.uk-width-1-1(type="submit") Search
         div.uk-block#result
-
 block after-footer
     script(src="/js/client.js")

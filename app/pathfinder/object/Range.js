@@ -30,13 +30,21 @@ function Range(hours, minutes) {
     this.correctTime()
     return this
 }
+
+/**
+ * return minutes diff between two time -> [hours, minutes]
+ * @param {object} splitSrc 
+ * @param {object} splitTgt 
+ */
+Range.diff = (t1, t2) => ((t2[0] - t1[0]) * 60) + (t2[1] - t1[1])
+
 Range.prototype.correctHours = function () {
     while (this.time[0] >= 24)
         this.time[0] -= 24
     return this
 }
 Range.prototype.correctTime = function () {
-    while (this.time[1] > 60) {
+    while (this.time[1] >= 60) {
         this.time[1] -= 60
         this.time[0]++
     }

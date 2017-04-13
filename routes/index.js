@@ -12,4 +12,9 @@ router.get('/route', function(req, res, next) {
   res.render('route');
 });
 
+router.get('/sigma', function (req, res, next) {
+    res.render('partials/sigma')
+});
+
+
 module.exports = router

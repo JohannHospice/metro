@@ -3,7 +3,10 @@ Math.round5 = function (x) {
 }
 Number.prototype.toStringFormated = function (length) {
     var value = this.valueOf()
-    if (value <= 0) return '00'
+    if(value < 0)
+        throw 'not my problem'
+    if (value == 0) 
+        return '00'
     var str = ""
     for (let i = length - 1; value < Math.pow(10, i); i--)
         str += '0'
@@ -11,13 +14,17 @@ Number.prototype.toStringFormated = function (length) {
     return str
 }
 
-/**
- * 
- */
 $(document).ready(function () {
-    /**
-     * 
-     */
+    // Static Func
+    function setClassDanger($input) {
+        return $input.removeClass('uk-form-success').addClass('uk-form-danger')
+    }
+
+    function setClassSuccess($input) {
+        return $input.removeClass('uk-form-danger').addClass('uk-form-success')
+    }
+
+    // RequestFactory
     function RequestFactory() {}
     RequestFactory.prototype.route = function (departure, arrival, sens, time) {
         return $.ajax({
@@ -42,24 +49,7 @@ $(document).ready(function () {
     }
     var requestFactory = new RequestFactory()
 
-    /**
-     * Static Func
-     */
-    function setClassDanger($input) {
-        return $input.removeClass('uk-form-success').addClass('uk-form-danger')
-    }
-
-    function setClassSuccess($input) {
-        return $input.removeClass('uk-form-danger').addClass('uk-form-success')
-    }
-
-    function inputKeyup() {
-        $(this).removeClass('uk-form-danger')
-    }
-
-    /**
-     * Init vars
-     */
+    // Init vars
     const $route = $('#route')
     const $result = $route.find('#result')
     const $form = $route.find('#form')
@@ -72,9 +62,8 @@ $(document).ready(function () {
     const $arrival = $inputs.filter('[name=arrival]')
     const $time = $inputs.filter('[name=time]')
 
-    /**
-     * Init elements
-     */
+    // Init elements
+    // Set default time value to time input
     ;
     (function () {
         var now = new Date()
@@ -83,10 +72,35 @@ $(document).ready(function () {
         $time.val(hours + ':' + minutes)
     })()
 
-    /**
-     * Init behaviors
-     */
-    $inputs.keyup(inputKeyup)
+    // Autocompletion
+    ;
+    (function () {
+        const options = {
+            'minLength': 1,
+            'source': function (release) {
+                let value = this.input.val()
+                requestFactory.search(value)
+                    .done(function (stations) {
+                        release(stations.map(function (station) {
+                            return {
+                                value: station.label
+                            }
+                        }))
+                    })
+                    .fail(function () {
+                        release([])
+                    })
+            }
+        }
+        $('.uk-autocomplete').each(function (i, element) {
+            $.UIkit.autocomplete(element, options)
+        })
+    })()
+
+    // Init event handlers
+    $inputs.keyup(function () {
+        $(this).removeClass('uk-form-danger')
+    })
 
     $sens.change(function () {
         var value = $(this).val()
@@ -98,9 +112,7 @@ $(document).ready(function () {
         }
     })
 
-    /**
-     * Request Submited to get Route
-     */
+    // Request Submited to get Route
     $form.submit(function (event) {
         event.preventDefault()
 
@@ -112,6 +124,7 @@ $(document).ready(function () {
         var time = null
         var valid = true
 
+        // Inputs verification
         if (typeof departure !== 'string' || departure.length == 0) {
             setClassDanger($departure)
             valid = false
@@ -130,7 +143,8 @@ $(document).ready(function () {
                 var minutes = parseInt(timeValueSplited[1], 10)
                 if (timeValue.length == 5 && minutes != NaN && hours != NaN) {
                     time = [hours, minutes]
-                } else throw 'err'
+                } else
+                    throw 'err'
             } catch (e) {
                 setClassDanger($time)
                 valid = false
@@ -141,6 +155,7 @@ $(document).ready(function () {
         }
 
         if (valid) {
+            // Submiting form
             requestFactory.route(departure, arrival, sens, time)
                 .done(function (data) {
                     setClassSuccess($departure)
@@ -170,27 +185,4 @@ $(document).ready(function () {
             });
         }
     })
-
-    /**
-     * Autocompletion
-     */
-    const autocompleteOptions = {
-        'minLength': 1,
-        'source': function (release) {
-            let value = this.input.val()
-            requestFactory.search(value)
-                .done(function (stations) {
-                    release(stations.map(function (station) {
-                        return {
-                            value: station.label
-                        }
-                    }))
-                })
-                .fail(function () {
-                    release([])
-                })
-        }
-    }
-    $.UIkit.autocomplete($('#autocomplete-departure'), autocompleteOptions);
-    $.UIkit.autocomplete($('#autocomplete-arrival'), autocompleteOptions);
 })

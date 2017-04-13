@@ -77,4 +77,8 @@ router.get('/search', function (req, res, next) {
     res.send(suggestions)
 });
 
+router.get('/graph.json', function (req, res, next) {
+    res.send(metroManager.jsonGraph())
+});
+
 module.exports = router

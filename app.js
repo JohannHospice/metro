@@ -16,9 +16,11 @@ app.locals = {
 	routes: {
 		home: '/',
 		route: '/route'
+	},
+	ucfirst: function (value) {
+		return value.charAt(0).toUpperCase() + value.slice(1);
 	}
 }
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
