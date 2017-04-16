@@ -17,8 +17,8 @@ router.get('/route', function (req, res, next) {
         typeof arrival !== 'string' ||
         typeof sens !== 'string' ||
         typeof time !== 'object')
-        return res.status(500).send('not valid')
-        
+        return res.status(500).send('parameters not valid')
+
     departure = departure.trim().toLowerCase()
     arrival = arrival.trim().toLowerCase()
 
@@ -31,10 +31,13 @@ router.get('/route', function (req, res, next) {
     if (hasLabel.arrival && hasLabel.departure) {
         let nd1 = metroManager.getNodeByLabel(departure)
         let nd2 = metroManager.getNodeByLabel(arrival)
-        let path = metroManager.buildPath(nd1, nd2, isLeaving, time).pack()
-        res.render('partials/path', path)
-    } else
-        res.status(500).json(hasLabel)
+        if (nd1 != nd2) {
+            let path = metroManager.buildPath(nd1, nd2, isLeaving, time).pack()
+            return res.render('partials/path', path)
+        }
+        return res.status(500).send('departure and arrival are the same')
+    }
+    return res.status(500).json(hasLabel)
 });
 
 router.get('/route-pure', function (req, res, next) {
@@ -50,7 +53,7 @@ router.get('/route-pure', function (req, res, next) {
         typeof sens !== 'string' ||
         typeof time !== 'object')
         return res.status(500).send('not valid')
-        
+
     departure = departure.trim().toLowerCase()
     arrival = arrival.trim().toLowerCase()
 

@@ -9,6 +9,30 @@ const MetroGraph = require('./graph/MetroGraph'),
 const REG_FILENAME_STATION = /^metro_ligne(.*?)\.stations$/
 const CACHE_LIFETIME = 10000
 
+const parser = {
+	labels(data) {
+		// [[number, string], ...]
+		return data.split('\n').map(line => {
+			let i = line.indexOf(' ')
+			return [parseInt(line.slice(0, i)), line.slice(i + 1).trim().toLowerCase()]
+		}).filter(label => label.length == 2 && label[0] > -1 && label[1].length > 0)
+	},
+
+	edges(data) {
+		// [[number, number, number], ...]
+		return data.split('\n')
+			.map(line => line.split(' ').map(k => parseInt(k)))
+			.filter(edge => edge.length == 3 && edge[0] > -1 && edge[1] > -1 && edge[2] > -1)
+	},
+
+	station(data) {
+		// [number, ...]
+		return data.split('\n')
+			.map(line => parseInt(line.trim()))
+			.filter(station => station > -1)
+	}
+}
+
 /**
  * Constructor
  * @param {String} root 
@@ -32,16 +56,15 @@ function MetroManager(root) {
 	this.cache = new Map()
 	this.metroGraph = new MetroGraph()
 
-	parseLabels(fs.readFileSync(paths.labels, 'utf8'))
+	parser.labels(fs.readFileSync(paths.labels, 'utf8'))
 		.forEach(label => this.metroGraph.addNode(label[0], label[1]))
 
-	parseEdges(fs.readFileSync(paths.edges, 'utf8'))
+	parser.edges(fs.readFileSync(paths.edges, 'utf8'))
 		.forEach(edge => this.metroGraph.addEdge(edge[0], edge[1], edge[2]))
 
-	Object.keys(paths.stations).forEach(line => {
-		parseStation(fs.readFileSync(paths.stations[line], 'utf8'))
-			.forEach(station => this.metroGraph.addStation(line, station))
-	})
+	Object.keys(paths.stations)
+		.forEach(line =>parser.station(fs.readFileSync(paths.stations[line], 'utf8'))
+			.forEach(station => this.metroGraph.addStation(line, station)))
 }
 
 // Request managing
@@ -115,24 +138,3 @@ MetroManager.prototype.jsonGraph = function () {
 }
 
 module.exports = MetroManager
-
-function parseEdges(data) {
-	return data.split('\n')
-		.map(line => line.split(' ').map(k => parseInt(k)))
-		.filter(Boolean)
-}
-
-function parseLabels(data) {
-	return data.split('\n')
-		.map(line => {
-			let i = line.indexOf(' ')
-			return [parseInt(line.slice(0, i)), line.slice(i + 1).trim().toLowerCase()]
-		})
-		.filter(Boolean)
-}
-
-function parseStation(data) {
-	return data.split('\n')
-		.map(line => line.trim())
-		.filter(Boolean)
-}
