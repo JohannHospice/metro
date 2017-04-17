@@ -7,6 +7,10 @@
 		"email": "johannhospice.dev@gmail.com",
 		"url": "https://johannhospice.github.io/"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://djiheezy.visualstudio.com/_git/metro"
+	},
 	"scripts": {
 		"start": "node ./bin/www"
 	},
