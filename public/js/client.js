@@ -14,8 +14,6 @@ Number.prototype.toStringFormated = function (length) {
     return str
 }
 
-
-
 $(document).ready(function () {
     // Static Func
     function setClassDanger($element) {
