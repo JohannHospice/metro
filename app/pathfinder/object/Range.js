@@ -30,6 +30,13 @@ function Range(hours, minutes) {
     this.correctTime()
     return this
 }
+Range.from = function (time) {
+    let split = time.split(':')
+    return new Range(split[0], split[1])
+}
+Range.toString = function (time) {
+    return time[0].toStringFormated(2) + ':' + time[1].toStringFormated(2)
+}
 
 /**
  * return minutes diff between two time -> [hours, minutes]
@@ -44,6 +51,10 @@ Range.prototype.correctHours = function () {
     return this
 }
 Range.prototype.correctTime = function () {
+    while (this.time[1] < 0) {
+        this.time[1] += 60
+        this.time[0]--
+    }
     while (this.time[1] >= 60) {
         this.time[1] -= 60
         this.time[0]++
@@ -56,11 +67,9 @@ Range.prototype.correctTime = function () {
  * @param {number} minutes 
  * @param {number} hours 
  */
-Range.prototype.setLeavingTime = function (minutes, hours) {
+Range.prototype.addMinutes = function (minutes) {
     if (typeof minutes === 'number')
         this.time[1] += minutes
-    if (typeof hours === 'number')
-        this.time[0] = hours
     this.correctTime()
     return this
 }
@@ -69,11 +78,9 @@ Range.prototype.setLeavingTime = function (minutes, hours) {
  * @param {number} minutes 
  * @param {number} hours 
  */
-Range.prototype.setArrivalTime = function (minutes, hours) {
+Range.prototype.removeMinutes = function (minutes) {
     if (typeof minutes === 'number')
         this.time[1] -= minutes
-    if (typeof hours === 'number')
-        this.time[0] = hours
     this.correctTime()
     return this
 }
@@ -102,6 +109,6 @@ Range.prototype.getMinutes = function () {
     return this.time[1]
 }
 Range.prototype.toString = function () {
-    return this.time[0].toStringFormated(2) + ':' + this.time[1].toStringFormated(2)
+    return Range.toString(this.time)
 }
 module.exports = Range

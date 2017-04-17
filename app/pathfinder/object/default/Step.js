@@ -9,6 +9,10 @@ function Step(node, range) {
 Step.prototype = Object.create(Node.prototype)
 Step.prototype.constructor = Step
 
+
+Step.prototype.setRange = function(range) {
+    this.range = range
+}
 Step.prototype.pack = function() {
     let pack = Node.prototype.pack.apply(this, arguments)
     return {

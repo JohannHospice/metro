@@ -3,7 +3,7 @@
 const StationStep = require('./StationStep')
 const Range = require('../Range')
 
-function Transit(line, direction) {
+function Transit(line) {
     this.line = line
     this.direction = 'none'
     this.stations = []
@@ -42,6 +42,9 @@ Transit.prototype.setStationLabel = function(i, label) {
 }
 Transit.prototype.setDirection = function(directionLabel) {
     this.direction = directionLabel
+}
+Transit.prototype.getLastStation = function() {
+    return this.stations[this.stations.length - 1]
 }
 
 Transit.prototype.pack = function() {

@@ -63,7 +63,7 @@ function MetroManager(root) {
 		.forEach(edge => this.metroGraph.addEdge(edge[0], edge[1], edge[2]))
 
 	Object.keys(paths.stations)
-		.forEach(line =>parser.station(fs.readFileSync(paths.stations[line], 'utf8'))
+		.forEach(line => parser.station(fs.readFileSync(paths.stations[line], 'utf8'))
 			.forEach(station => this.metroGraph.addStation(line, station)))
 }
 
@@ -78,7 +78,7 @@ function MetroManager(root) {
 MetroManager.prototype.buildPath = function (source, target, isLeaving, time) {
 	if (!this.hasCache(source))
 		this.prepareCache(source)
-	return new MetroPath(this.metroGraph, this.getCache(source).build(target), isLeaving, time)
+	return MetroPath.from(this.getCache(source).build(target), this.metroGraph, time, isLeaving)
 }
 /**
  * 
