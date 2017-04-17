@@ -23,59 +23,75 @@ function simiArray(arr1, arr2) {
     }
     return simi
 }
+
+function timeAddMinutesStr(timeArray, minutes) {
+    return new Range(timeArray[0].valueOf(), timeArray[1].valueOf())
+        .addMinutes(minutes)
+        .toString()
+}
+
+function timeRemoveMinutesStr(timeArray, minutes) {
+    return new Range(timeArray[0].valueOf(), timeArray[1].valueOf())
+        .removeMinutes(minutes)
+        .toString()
+}
 /**
  * 
  * @param {MetroGraph} metroGraph 
  * @param {Path} path 
  */
-function MetroPath(metroGraph, path, isLeaving, time, penetration = 1) {
-    function buildRangeStr(stepRng) {
-        let range = new Range(time[0].valueOf(), time[1].valueOf())
-        isLeaving ? range.setLeavingTime(stepRng) : range.setArrivalTime(stepRng)
-        return range.toString() 
-    }
-    if (!(path && metroGraph))
-        throw "rrrr"
-
+function MetroPath() {
     this.route = []
+}
+MetroPath.from = function (path, metroGraph, time, isLeaving) {
+    return (isLeaving ? MetroPath.fromLeaving : MetroPath.fromArriving)(path, metroGraph, time)
+}
+MetroPath.fromLeaving = function (path, metroGraph, time) {
+    let metroPath = new MetroPath()
+
     let iTransit = 0
-    let step = path.getStep(0)
-    let fromLabel = metroGraph.getLabel(step.node)
-    let fromNd = step.node
+    let from = null
+    let cor1 = []
 
-    let cor1 = metroGraph.getCorrespondances(fromNd)
-    let line = cor1[0]
-    this.addTransit(line)
-
-    let timeStr = buildRangeStr(step.range)
-    this.addStationToTransit(iTransit, fromNd, fromLabel, timeStr)
-
-    for (let j = 1; j < path.route.length; j++) {
-        step = path.getStep(j)
-        let toNd = step.node
-        let toLabel = metroGraph.getLabel(toNd)
-        timeStr = buildRangeStr(step.range)
-
-        let cor2 = metroGraph.getCorrespondances(toNd)
-        let simi = simiArray(cor1, cor2)
-        if (simi.size <= 0) {
-            iTransit = this.addTransit(cor2[0]) - 1
-            line = cor2[0]
+    for (let j = 0; j < path.route.length; j++) {
+        let to = path.getStep(j)
+        let cor2 = metroGraph.getCorrespondances(to.node)
+        if (simiArray(cor1, cor2).size <= 0) {
+            iTransit = metroPath.addTransit(cor2[0]) - 1
             cor1 = cor2
-            /*
-            timeStr = (function (stepRng) {
-                let timeNonStr = timeStr.split(':')
-                let range = new Range(timeNonStr[0], timeNonStr[1])
-                return (isLeaving ? range.setLeavingTime(stepRng) : range.setArrivalTime(stepRng)).toString() 
-            })(penetration)
-            */
-        } else {
-            let directionLabel = metroGraph.getLabel(metroGraph.getDirection(line, fromNd, toNd))
-            this.setTransitDirection(iTransit, directionLabel)
-        }
-        this.addStationToTransit(iTransit, toNd, toLabel, timeStr)
-        fromNd = toNd
+        } else
+            metroPath.setTransitDirection(iTransit, metroGraph.getLabel(metroGraph.getDirection(cor1[0], from.node, to.node)))
+        metroPath.addStationToTransit(iTransit, to.node, metroGraph.getLabel(to.node), timeAddMinutesStr(time, to.range))
+        from = to
     }
+    return metroPath
+}
+MetroPath.fromArriving = function (path, metroGraph, time) {
+    let metroPath = MetroPath.fromLeaving(path, metroGraph, time)
+
+    let lastTransitI = metroPath.route.length - 1
+    let lastStationOfLastTransitI = metroPath.route[lastTransitI].stations.length - 1
+
+    let oldRange = path.getStep(0).range
+    let timeRng = new Range(time[0], time[1])
+        .removeMinutes(oldRange)
+    metroPath.setStationRange(lastTransitI, lastStationOfLastTransitI, timeRng.toString())
+
+    ;
+    (function aux(i, j, stepI, oldRange, time) {
+        if (j < 0) {
+            i--
+            if (i < 0)
+                return
+            j = metroPath.route[i].stations.length - 1
+        }
+        let newRange = path.getStep(stepI).range
+        time.removeMinutes(newRange - oldRange)
+        metroPath.setStationRange(i, j, time.toString())
+        aux(i, j - 1, stepI + 1, newRange, time)
+    })(lastTransitI, lastStationOfLastTransitI - 1, 1, oldRange, timeRng)
+
+    return metroPath
 }
 MetroPath.prototype.addTransit = function (line) {
     return this.route.push(new Transit(line))
@@ -83,19 +99,22 @@ MetroPath.prototype.addTransit = function (line) {
 MetroPath.prototype.setTransitDirection = function (i, directionLabel) {
     this.route[i].setDirection(directionLabel)
 }
+MetroPath.prototype.getStationRange = function (i, j) {
+    this.route[i].getStation(j).range
+}
+MetroPath.prototype.setStationRange = function (i, j, range) {
+    this.route[i].setStationRange(j, range)
+}
 
 MetroPath.prototype.addStationToTransit = function (i, node, label, range) {
     this.route[i].addStation(node, label, range)
 }
-/**
- * Repare beaucoup de problemes
- */
 MetroPath.prototype.pack = function () {
     let lastTransit = this.route[this.route.length - 1]
 
     let target = lastTransit.getStation(lastTransit.getSize() - 1)
     let source = this.route[0].getStation(0)
-    let route = this.route.filter(transit => transit.getSize() > 1 )
+    let route = this.route.filter(transit => transit.getSize() > 1)
     return {
         length: route.length,
         source: route[0].getStationLabel(0),
